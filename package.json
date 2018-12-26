@@ -1,22 +1,18 @@
 {
-  "name": "electron-quick-start",
+  "name": "ultimate-p2p-client",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "A P2P client for the masses",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
-  ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Arveto Ink.",
+  "license": "GPU",
   "devDependencies": {
     "electron": "^3.0.7"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "root": "^3.2.0"
   }
 }
