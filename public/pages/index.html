@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ultimate P2P - Dev</title>
+
+    <script src="../js/socket.io.js"></script>
+    <script src="../js/sha512.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js"></script>
+    <script src="../js/peer.min.js"></script>
+
+</head>
+
+<body>
+<div id="app">
+
+    <h1>🚀 Ultimate P2P - Dev 🚀</h1>
+
+        <!-- User login -->
+    <h2>🙉 User connection 🙉</h2>
+    <div v-if="connected">
+        Hello, {{fiName}} {{faName}}
+    </div>
+    <div v-else>
+        <b>
+            john.doe1@arveto.io/password1<br>
+            john.doe2@arveto.io/password2<br>
+        </b>
+        <br>
+        E-mail:<br>
+        <input type="text" v-model="email" name="email"><br>
+        Password:<br>
+        <input type="password" v-model="password" name="password">
+        <button type="button" v-on:click="login()">Login</button>
+    </div>
+
+
+        <!-- Peer connection -->
+    <h2>⛽ Peer connection ⛽</h2>
+    <div v-if="connected">
+        <div v-if="peerConnected">
+            Connected to {{ selectedPeer }}
+        </div>
+
+        <div v-else>
+            <select v-model="selectedPeer">
+                <option v-for="peer in peers" :value="peer.peerId">
+                    {{peer.peerId}}
+                </option>
+            </select>
+
+            <button type="button" v-on:click="connectPeer()">P2P Connect</button>
+        </div>
+    </div>
+    <div v-else>
+        Please login to your account
+    </div>
+
+
+</div>
+<script src="../js/index.js"></script>
+</body>
