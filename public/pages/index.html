@@ -25,6 +25,8 @@
     <h2>🙉 User connection 🙉</h2>
     <div v-if="connected">
         Hello, {{user.fiName}} {{user.faName}}
+
+        <button type="button" v-on:click="logout()">Logout</button>
     </div>
     <div v-else>
         <b>
@@ -42,20 +44,17 @@
 
 
         <!-- Peer connection -->
-    <h2>🤝 Peer connection 🤝</h2>
+    <h2>🤝 Browse files 🤝</h2>
     <div v-if="connected">
         <div v-if="peerConnected">
             Connected to {{ selectedPeer }}
+            Downloading some random file
         </div>
 
         <div v-else>
-            <select v-model="selectedPeer">
-                <option v-for="peer in peers" :value="peer.peerId">
-                    {{peer.peerId}}
-                </option>
-            </select>
 
-            <button type="button" v-on:click="connectPeer()">P2P Connect</button>
+            File search coming soon
+
         </div>
     </div>
     <div v-else>
@@ -72,6 +71,7 @@
             {{ file.name }} <!-- BUG Rendering not working while array seems correct -->
         </li>
     </ul>
+
 </div>
 <div v-else>
     Please login to your account
