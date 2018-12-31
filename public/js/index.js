@@ -79,6 +79,12 @@ var app = new Vue({
             console.log("Received files!");
         });
 
+            // Send unrepertoried files to server
+        ipc.on('clientListUpdate', (event, data) => {
+            data.socketId = socket.io.engine.id;
+            socket.emit('clientListUpdate', data);
+        });
+
 
 
             //Accept incoming connections
@@ -94,7 +100,7 @@ var app = new Vue({
             shaObj.update(data.user.password);
             var hash= shaObj.getHash("HEX");
 
-            socket.emit('signIn', {password: hash, email: data.user.email, socketId: socket.io.engine.id});
+            socket.emit('signIn', {password: hash, email: data.user.email, socketId: socket.io.engine.id, peerId: data.peerId});
         },
 
         logout: () => {
