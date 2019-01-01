@@ -92,6 +92,12 @@ var app = new Vue({
             console.log("Wow, someone is connected");
         });
 
+
+            //Event to rebuild filesData.json
+        socket.on('rebuildData', (data) => {
+            ipc.send('rebuildData', data);
+        });
+
     },
 
     methods: {

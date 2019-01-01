@@ -36,7 +36,6 @@ function init (fs, ipc) {
             //Get OS username and path of shared folder
         console.log("Succesfully connected with email: "+data.email);
         osUserName = require("os").userInfo().username;
-        console.log("OS username: "+osUserName);
         dir = '/home/'+osUserName+'/UP2P/'+data.email;
 
 
@@ -76,14 +75,17 @@ function init (fs, ipc) {
             if(fileName != '.filesData.json'){
                 files.push({name: fileName});
 
+
                 // Try to match files in .filesData.json
                 j=0;
                 fileMatched = false
                 while(j < filesData.list.length){
+
                     if(filesData.list[j].name == files[files.length-1].name){
                         fileMatched = true;
                         break;
                     }
+                    j++;
                 }
 
                 // Add description, ID, etc..
@@ -108,6 +110,7 @@ function init (fs, ipc) {
                     fileDeleted = false;
                     break;
                 }
+                j++;
             }
             if(fileDeleted){
                 deletedFiles.push(filesData.list[i].name);
@@ -124,6 +127,27 @@ function init (fs, ipc) {
                 deletedFiles: deletedFiles
             });
         }
+    });
+
+
+    ipc.on('rebuildData', (event, data) => {
+
+        let files = fs.readJsonSync(dir + '/.filesData.json', { throws: false });
+        if(files == null)
+            files = {list: []};
+
+        for(let i=0; i < data.list.length; i++){
+            files.list.push({
+                id: data.list[i].id,
+                name: data.list[i].name,
+                description: ''
+            });
+        };
+
+        event.sender.send('filesList', files);
+
+            //Write file
+        fs.outputJsonSync(dir + '/.filesData.json', files);
     });
 }
 
