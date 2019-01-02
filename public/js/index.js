@@ -20,8 +20,8 @@ var data = {
         faName: '',
         pseudo: ''
     },
-
-    files: []
+    files: [],
+    research: ''
 };
 
 var app = new Vue({
@@ -77,6 +77,7 @@ var app = new Vue({
         ipc.on('filesList', (event, newData) => {
             data.files = newData.list;
             console.log("Received files!");
+            console.log(data.files);
         });
 
             // Send unrepertoried files to server
@@ -120,6 +121,10 @@ var app = new Vue({
             console.log(peerId);
             data.conn = peer.connect(peerId);
             data.peerConnected = true;
+        },
+
+        refresh: () => {
+            ipc.send('signInSuccess', {email: data.user.email});
         }
 
     }

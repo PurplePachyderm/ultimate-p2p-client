@@ -53,7 +53,7 @@
 
         <div v-else>
 
-            File search coming soon
+            <input v-model="research" placeholder="Search ya files here, mate! Wattya waitin for, mate?">
 
         </div>
     </div>
@@ -68,8 +68,9 @@
 <div v-if="connected">
     <ul>
         <li v-for="file in files">
-            {{ file.name }} <!-- BUG Rendering not working while array seems correct -->
+            {{ file.name }}
         </li>
+        <button type="button" v-on:click="refresh()">Refresh</button>
     </ul>
 
 </div>

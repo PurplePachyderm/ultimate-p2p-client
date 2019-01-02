@@ -73,7 +73,6 @@ function init (fs, ipc) {
             fileName = filesNames[i].split("/").pop();
 
             if(fileName != '.filesData.json'){
-                files.push({name: fileName});
 
 
                 // Try to match files in .filesData.json
@@ -81,7 +80,7 @@ function init (fs, ipc) {
                 fileMatched = false
                 while(j < filesData.list.length){
 
-                    if(filesData.list[j].name == files[files.length-1].name){
+                    if(filesData.list[j].name == fileName){
                         fileMatched = true;
                         break;
                     }
@@ -90,11 +89,19 @@ function init (fs, ipc) {
 
                 // Add description, ID, etc..
                 if(fileMatched){
-                    files[files.length-1].id = filesData.list[j].id;
-                    files[files.length-1].description = filesData.list[j].description;
+                    files.push({
+                        name: fileName,
+                        id: filesData.list[j].id,
+                        description: filesData.list[j].description
+                    });
+                    console.log("Pushing file:"+files);
                 }
                 else{
-                    unmatchedFiles.push(files[files.length-1].name);
+                    unmatchedFiles.push(fileName);
+                    files.push({
+                        name: fileName
+                    });
+                    console.log("Pushing file:"+files);
                 }
             }
         }
@@ -113,11 +120,14 @@ function init (fs, ipc) {
                 j++;
             }
             if(fileDeleted){
-                deletedFiles.push(filesData.list[i].name);
+                deletedFiles.push(filesData.list[i].id);
+                filesData.list.splice(i, 1);
             }
         }
 
 
+        console.log('Before sending filesList:');
+        console.log(files);
         event.sender.send('filesList', {list: files});
 
         //Decide wether or not it's usefull to update filesData.json
@@ -126,6 +136,11 @@ function init (fs, ipc) {
                 unmatchedFiles: unmatchedFiles,
                 deletedFiles: deletedFiles
             });
+        }
+
+        //Remove deleted files form filesData.json
+        if(deletedFiles.length > 0){
+            fs.outputJsonSync(dir + '/.filesData.json', filesData);
         }
     });
 
