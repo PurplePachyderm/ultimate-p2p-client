@@ -21,7 +21,8 @@ var data = {
         pseudo: ''
     },
     files: [],
-    research: ''
+    research: '',
+    results: []
 };
 
 var app = new Vue({
@@ -99,6 +100,12 @@ var app = new Vue({
             ipc.send('rebuildData', data);
         });
 
+
+            //Display researched files
+        socket.on('searchResult', (newData) => {
+            data.results =  newData.results;
+        });
+
     },
 
     methods: {
@@ -125,6 +132,11 @@ var app = new Vue({
 
         refresh: () => {
             ipc.send('signInSuccess', {email: data.user.email});
+        },
+
+        search: () => {
+            console.log(data.research);
+            socket.emit('search', {research: data.research});
         }
 
     }

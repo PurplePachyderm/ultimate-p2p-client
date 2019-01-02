@@ -145,6 +145,7 @@ function init (fs, ipc) {
     });
 
 
+
     ipc.on('rebuildData', (event, data) => {
 
         let files = fs.readJsonSync(dir + '/.filesData.json', { throws: false });
@@ -164,6 +165,7 @@ function init (fs, ipc) {
             //Write file
         fs.outputJsonSync(dir + '/.filesData.json', files);
     });
+
 }
 
 

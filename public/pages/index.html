@@ -54,6 +54,13 @@
         <div v-else>
 
             <input v-model="research" placeholder="Search ya files here, mate! Wattya waitin for, mate?">
+            <button type="button" v-on:click="search()">Search</button>
+
+            <div v-if="results.length > 0">
+                <li v-for="result in results">
+                    {{ result.name }}
+                </li>
+            </div>
 
         </div>
     </div>
