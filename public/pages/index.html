@@ -59,6 +59,7 @@
             <div v-if="results.length > 0">
                 <li v-for="result in results">
                     {{ result.name }}
+                    <button type="button" v-on:click="download(result.id)">Download</button>
                 </li>
             </div>
 

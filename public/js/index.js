@@ -8,8 +8,7 @@ syncBtn  = document.querySelector('#syncBtn'),
 asyncBtn = document.querySelector('#asyncBtn');
 
 var data = {
-    peerId: '',
-    conn: '',
+
     connected: false,
     peerConnected: false,
 
@@ -42,11 +41,46 @@ var app = new Vue({
 
             //Connect to Peer.js
         peer = new Peer({key: 'lwjd5qra8257b9'});   //TODO Get a real key somehow :p
-        peer.on('open', function(id) {
+
+        peer.on('open', (id) => {
             console.log('Session peer ID is: ' + id);
             data.peerId = id;
-            console.log(data.peerId);
         });
+
+            //Listen to file requests
+        peer.on('connection', (conn) => {
+            console.log("Wow someone is connected!")
+
+                // Receive messages
+            conn.on('data', (newData) => {
+                console.log('Received', newData);
+                console.log("typeof(newData)"+typeof(newData));
+
+                let i=0;
+                let fileName;
+                console.log("typeof(data.files[0].id)"+typeof(data.files[0].id));
+                while(i<data.files.length){
+
+                    if(data.files[i].id == newData){
+                        console.log("Found file: "+data.files[i].name);
+
+                        ipc.send('readFile', {name: data.files[i].name, email: data.user.email});
+                        fileName = data.files[i].name;
+                        i = data.files.length;
+                    }
+
+                    i++
+                }
+
+                    // Receive file content from main process
+                ipc.on('readFile', (event, data) => {
+                    conn.send({file: fileName, content: data.content});
+                });
+
+
+            });
+        });
+
 
 
             //User logged in
@@ -58,10 +92,8 @@ var app = new Vue({
             data.user.pseudo = user.pseudo;
             data.user.password = '';
 
-                //Send peer ID to server
-            socket.emit("newPeerId", {peerId: data.peerId, socketId: socket.io.engine.id});
 
-                //Request files
+                //Request files to main process
             ipc.send('signInSuccess', {email: data.user.email});
             console.log("Sign in successfull!")
         });
@@ -77,8 +109,6 @@ var app = new Vue({
             // Receive file list from main
         ipc.on('filesList', (event, newData) => {
             data.files = newData.list;
-            console.log("Received files!");
-            console.log(data.files);
         });
 
             // Send unrepertoried files to server
@@ -106,6 +136,32 @@ var app = new Vue({
             data.results =  newData.results;
         });
 
+
+            //Start download
+        socket.on('peerFound', newData => {
+            console.log('Peer found: '+newData.peerId);
+            var conn = peer.connect(newData.peerId);
+
+            conn.on('open', function() {
+                // Send messages
+                conn.send(newData.fileId);
+                console.log("Sent event bro!")
+
+
+                // Receive messages
+                conn.on('data', function(data) {
+                    console.log('Received ', data.file);
+                    console.log('Content: '+data.content);
+
+                });
+
+
+            });
+        });
+
+
+
+
     },
 
     methods: {
@@ -124,11 +180,6 @@ var app = new Vue({
             socket.emit('signOut', {socketId: socket.io.engine.id});
         },
 
-        connectPeer: (peerId) => {
-            console.log(peerId);
-            data.conn = peer.connect(peerId);
-            data.peerConnected = true;
-        },
 
         refresh: () => {
             ipc.send('signInSuccess', {email: data.user.email});
@@ -137,6 +188,10 @@ var app = new Vue({
         search: () => {
             console.log(data.research);
             socket.emit('search', {research: data.research});
+        },
+
+        download: (id) => {
+            socket.emit('download', {id: id});
         }
 
     }

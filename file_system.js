@@ -166,6 +166,25 @@ function init (fs, ipc) {
         fs.outputJsonSync(dir + '/.filesData.json', files);
     });
 
+
+
+    ipc.on('readFile', (event, data) => {
+        console.log(data.email + " asked for file " + data.name);
+        console.log("Full path"+dir+'/'+data.name);
+
+        fs.readFile(dir+'/'+data.name, 'utf-8', (err, data) => {
+            if(err){
+                console.log("An error ocurred reading the file :" + err.message);
+                return;
+            }
+
+
+            event.sender.send('readFile', {content: data});
+
+
+        });
+    });
+
 }
 
 
