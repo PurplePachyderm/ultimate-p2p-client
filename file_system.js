@@ -178,11 +178,27 @@ function init (fs, ipc) {
                 return;
             }
 
-
-            event.sender.send('readFile', {content: data});
-
+            event.sender.send('readFile', { content: JSON.parse(JSON.stringify(data)) });
 
         });
+    });
+
+
+
+    ipc.on('saveFile', (event, data) => {
+        console.log('About to save file '+data.id);
+
+        fs.outputFileSync(dir+'/'+data.file, JSON.parse(JSON.stringify(data.content)));
+
+        let files = fs.readJsonSync(dir + '/.filesData.json', { throws: false });
+        files.list.push({
+            id: data.id,
+            name: data.file,
+            description: ''
+        });
+        fs.outputJsonSync(dir + '/.filesData.json', files);
+
+        event.sender.send('saveFile');
     });
 
 }

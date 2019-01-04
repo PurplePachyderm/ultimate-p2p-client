@@ -74,10 +74,9 @@ var app = new Vue({
 
                     // Receive file content from main process
                 ipc.on('readFile', (event, data) => {
-                    conn.send({file: fileName, content: data.content});
+                    //Send to peer
+                    conn.send({file: fileName, content: data.content, id: newData});
                 });
-
-
             });
         });
 
@@ -150,9 +149,7 @@ var app = new Vue({
 
                 // Receive messages
                 conn.on('data', function(data) {
-                    console.log('Received ', data.file);
-                    console.log('Content: '+data.content);
-
+                    ipc.send('saveFile', data);
                 });
 
 
@@ -160,7 +157,11 @@ var app = new Vue({
         });
 
 
-
+        // Receive messages
+        ipc.on('saveFile', (event) => {
+            console.log('Yaay');
+            ipc.send('signInSuccess', {email: data.user.email});
+        });
 
     },
 
