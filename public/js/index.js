@@ -53,12 +53,9 @@ var app = new Vue({
 
                 // Receive messages
             conn.on('data', (newData) => {
-                console.log('Received', newData);
-                console.log("typeof(newData)"+typeof(newData));
 
                 let i=0;
                 let fileName;
-                console.log("typeof(data.files[0].id)"+typeof(data.files[0].id));
                 while(i<data.files.length){
 
                     if(data.files[i].id == newData){
@@ -75,7 +72,7 @@ var app = new Vue({
                     // Receive file content from main process
                 ipc.on('readFile', (event, data) => {
                     //Send to peer
-                    conn.send({file: fileName, content: data.content, id: newData});
+                    conn.send({file: fileName, content: data.content.toString('base64'), id: newData});
                 });
             });
         });
@@ -142,13 +139,14 @@ var app = new Vue({
             var conn = peer.connect(newData.peerId);
 
             conn.on('open', function() {
-                // Send messages
+                // Send messages (file request)
                 conn.send(newData.fileId);
-                console.log("Sent event bro!")
 
 
-                // Receive messages
+                // Receive messages (file content)
                 conn.on('data', function(data) {
+
+
                     ipc.send('saveFile', data);
                 });
 
@@ -159,7 +157,6 @@ var app = new Vue({
 
         // Receive messages
         ipc.on('saveFile', (event) => {
-            console.log('Yaay');
             ipc.send('signInSuccess', {email: data.user.email});
         });
 
@@ -187,7 +184,6 @@ var app = new Vue({
         },
 
         search: () => {
-            console.log(data.research);
             socket.emit('search', {research: data.research});
         },
 

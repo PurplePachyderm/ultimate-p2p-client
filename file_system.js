@@ -34,7 +34,6 @@ function init (fs, ipc) {
         //Function to manage shared files on session startup
 
             //Get OS username and path of shared folder
-        console.log("Succesfully connected with email: "+data.email);
         osUserName = require("os").userInfo().username;
         dir = '/home/'+osUserName+'/UP2P/'+data.email;
 
@@ -51,7 +50,6 @@ function init (fs, ipc) {
 
 
         filesNames = getFilesList(fs, dir);
-        console.log(filesNames);
 
             //WARNING Exploit bug: replacing a file while keeping the same name would
             //result in the same file in the DB to have several versions
@@ -94,14 +92,12 @@ function init (fs, ipc) {
                         id: filesData.list[j].id,
                         description: filesData.list[j].description
                     });
-                    console.log("Pushing file:"+files);
                 }
                 else{
                     unmatchedFiles.push(fileName);
                     files.push({
                         name: fileName
                     });
-                    console.log("Pushing file:"+files);
                 }
             }
         }
@@ -126,8 +122,6 @@ function init (fs, ipc) {
         }
 
 
-        console.log('Before sending filesList:');
-        console.log(files);
         event.sender.send('filesList', {list: files});
 
         //Decide wether or not it's usefull to update filesData.json
@@ -169,26 +163,26 @@ function init (fs, ipc) {
 
 
     ipc.on('readFile', (event, data) => {
-        console.log(data.email + " asked for file " + data.name);
-        console.log("Full path"+dir+'/'+data.name);
 
-        fs.readFile(dir+'/'+data.name, 'utf-8', (err, data) => {
-            if(err){
-                console.log("An error ocurred reading the file :" + err.message);
-                return;
-            }
-
-            event.sender.send('readFile', { content: JSON.parse(JSON.stringify(data)) });
-
+        fs.readFile(dir+'/'+data.name, 'base64', function(err, data) {
+            event.sender.send('readFile', { content: data });
         });
+
     });
 
 
 
     ipc.on('saveFile', (event, data) => {
-        console.log('About to save file '+data.id);
 
-        fs.outputFileSync(dir+'/'+data.file, JSON.parse(JSON.stringify(data.content)));
+        //fs.outputFileSync(dir+'/'+data.file, data.content);
+        var fd =  fs.openSync(dir+'/'+data.file, 'w');
+
+        let buffer = new Buffer(data.content, 'base64');
+
+        //BUG fs.write asks function on param 5 (seems to get content as string?)
+
+        fs.write(fd, buffer, 0, buffer.length, 0, (err,written) =>{
+        });
 
         let files = fs.readJsonSync(dir + '/.filesData.json', { throws: false });
         files.list.push({
