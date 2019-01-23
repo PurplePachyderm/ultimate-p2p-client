@@ -41,7 +41,27 @@
         <button type="button" v-on:click="login()">Login</button>
     </div>
 
+<div v-if="!connected">
+        <b> Inscription </b>
+        <br />
+        First name : <br />
+        <input type="text" v-model="user.fiName" name="fiName"><br />
+        Last name : <br />
+        <input type="text" v-model="user.faName" name="faName"><br />
+        Pseudo : <br />
+        <input type="text" v-model="user.pseudo" name="pseudo"><br />
+        <br />
+        E-mail : <br />
+        <input type="text" v-model="user.email" name="email"><br />
+        Password: <br />
+        <input type="password" v-model="user.password" name="password">
+        <br />
+        Password verify :
+        <input type="password" v-model="user.password2" name="password">
+        <button type="button" v-on:click="signup()">Sign Up </button>
 
+
+</div>
 
         <!-- Peer connection -->
     <h2>🔍 Browse files 🔍</h2>
