@@ -15,6 +15,7 @@ var data = {
     user: {
         email: '',
         password: '',
+        password2: '',
         fiName: '',
         faName: '',
         pseudo: ''
@@ -77,6 +78,16 @@ var app = new Vue({
             });
         });
 
+
+        socket.on('signUpSuccess', (userData) => {
+            //Send request to automatically log in
+
+            let shaObj = new jsSHA("SHA-512", "TEXT");
+            shaObj.update(data.user.password);
+            var hash= shaObj.getHash("HEX");
+
+            socket.emit('signIn', {password: hash, email: userData.email, socketId: socket.io.engine.id, peerId: data.peerId});
+        });
 
 
             //User logged in
@@ -169,6 +180,17 @@ var app = new Vue({
             var hash= shaObj.getHash("HEX");
 
             socket.emit('signIn', {password: hash, email: data.user.email, socketId: socket.io.engine.id, peerId: data.peerId});
+        },
+
+        signup: () => {
+            let shaObj = new jsSHA("SHA-512", "TEXT");
+
+            if(data.password == data.password2){
+                shaObj.update(data.user.password);
+                var hash= shaObj.getHash("HEX");
+
+                socket.emit('signUp', {password: hash, email: data.user.email, fiName: data.user.fiName, faName: data.user.faName, email: data.user.email});
+            }
         },
 
         logout: () => {
