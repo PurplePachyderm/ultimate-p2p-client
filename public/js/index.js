@@ -157,7 +157,7 @@ var app = new Vue({
                 // Receive messages (file content)
                 conn.on('data', function(data) {
 
-
+                    socket.emit('addOwnership', {fileId: newData.fileId, socketId: socket.io.engine.id});
                     ipc.send('saveFile', data);
                 });
 

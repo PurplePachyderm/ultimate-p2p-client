@@ -174,22 +174,36 @@ function init (fs, ipc) {
 
     ipc.on('saveFile', (event, data) => {
 
-        //fs.outputFileSync(dir+'/'+data.file, data.content);
         var fd =  fs.openSync(dir+'/'+data.file, 'w');
 
         let buffer = new Buffer(data.content, 'base64');
 
-        //BUG fs.write asks function on param 5 (seems to get content as string?)
 
         fs.write(fd, buffer, 0, buffer.length, 0, (err,written) =>{
         });
 
         let files = fs.readJsonSync(dir + '/.filesData.json', { throws: false });
-        files.list.push({
-            id: data.id,
-            name: data.file,
-            description: ''
-        });
+
+
+        //Du sale
+        try{
+            files.list.push({
+                id: data.id,
+                name: data.file,
+                description: ''
+            });
+        }catch{
+            console.log("Caught");
+            files = {list: []};
+
+            files.list.push({
+                id: data.id,
+                name: data.file,
+                description: ''
+            });
+        }
+
+
         fs.outputJsonSync(dir + '/.filesData.json', files);
 
         event.sender.send('saveFile');
